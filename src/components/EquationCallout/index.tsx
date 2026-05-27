@@ -20,10 +20,21 @@ export function EquationCallout({ tex, display = false }: EquationCalloutProps) 
     }
   }, [tex, display]);
 
+  if (display) {
+    return (
+      <div className="overflow-x-auto my-2">
+        <span
+          ref={ref}
+          className="block text-center text-text-secondary"
+        />
+      </div>
+    );
+  }
+
   return (
     <span
       ref={ref}
-      className={`${display ? 'block text-center my-2' : 'inline'} text-text-secondary`}
+      className="inline text-text-secondary"
     />
   );
 }

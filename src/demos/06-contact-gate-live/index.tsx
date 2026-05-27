@@ -182,7 +182,7 @@ function ContactGateInner() {
   const duration = data.manifest.duration_s;
 
   return (
-    <div className="grid grid-cols-[1fr_240px] gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-6">
       <div className="space-y-4">
         {/* |F| signal */}
         <div className="card">

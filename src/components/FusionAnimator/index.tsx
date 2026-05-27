@@ -2,6 +2,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MODALITY_HEX } from '../../lib/viz/colors';
 import type { FusionStrategy } from '../../lib/data/types';
 
+function seededRandom(seed: number): number {
+  const x = Math.sin(seed * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
+}
+
 interface FusionAnimatorProps {
   strategy: FusionStrategy;
   playing?: boolean;
@@ -16,7 +21,7 @@ interface StrategyInfo {
   models: string;
 }
 
-const STRATEGY_INFO: Record<FusionStrategy, StrategyInfo> = {
+export const STRATEGY_INFO: Record<FusionStrategy, StrategyInfo> = {
   concat: {
     title: 'Concatenation',
     steps: [
@@ -137,7 +142,7 @@ function TokenBar({
               width: Math.max(4, 48 / count),
               height: 32,
               backgroundColor: color,
-              opacity: 0.4 + Math.random() * 0.5,
+              opacity: 0.4 + seededRandom(i + count) * 0.5,
             }}
             initial={{ scaleY: 0 }}
             animate={{ scaleY: 1 }}
@@ -210,7 +215,7 @@ function CrossAttnViz({ step }: { step: number }) {
                 className="h-1.5 rounded-sm"
                 style={{
                   backgroundColor: MODALITY_HEX.force,
-                  opacity: 0.1 + Math.random() * 0.8,
+                  opacity: 0.1 + seededRandom(i * 13 + 7) * 0.8,
                 }}
               />
             ))}
@@ -330,7 +335,7 @@ function MMDiTViz({ step }: { step: number }) {
                       : i < 96
                         ? MODALITY_HEX.action
                         : '#666',
-                  opacity: 0.15 + Math.random() * 0.5,
+                  opacity: 0.15 + seededRandom(i * 17 + 3) * 0.5,
                 }}
               />
             ))}

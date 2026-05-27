@@ -104,7 +104,9 @@ export default function EncoderZoo() {
           >
             RGB Vision
           </h2>
-          <TokenInspector signal="rgb" encoder={rgbEncoder} />
+          <div className="min-h-[280px]">
+            <TokenInspector signal="rgb" encoder={rgbEncoder} />
+          </div>
           <EncoderSelector
             options={RGB_ENCODERS}
             selected={rgbEncoder}
@@ -120,7 +122,9 @@ export default function EncoderZoo() {
           >
             Force / Torque
           </h2>
-          <TokenInspector signal="force" encoder={ftEncoder} />
+          <div className="min-h-[280px]">
+            <TokenInspector signal="force" encoder={ftEncoder} />
+          </div>
           <EncoderSelector
             options={FT_ENCODERS}
             selected={ftEncoder}
@@ -136,7 +140,9 @@ export default function EncoderZoo() {
           >
             Proprioception
           </h2>
-          <TokenInspector signal="proprio" encoder={proprioEncoder} />
+          <div className="min-h-[280px]">
+            <TokenInspector signal="proprio" encoder={proprioEncoder} />
+          </div>
           <EncoderSelector
             options={PROPRIO_ENCODERS}
             selected={proprioEncoder}

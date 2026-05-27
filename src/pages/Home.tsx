@@ -4,10 +4,16 @@ import { MODALITY_HEX } from '../lib/viz/colors';
 import { RegistrationMark } from '../components/RegistrationMark';
 
 const PRIORITY_STYLE = {
-  P0: 'bg-accent/20 text-accent',
-  P1: 'bg-modality-force/20 text-modality-force',
-  P2: 'bg-text-tertiary/20 text-text-tertiary',
+  P0: 'text-accent',
+  P1: 'text-text-secondary',
+  P2: 'text-text-tertiary',
 } as const;
+
+const PRIORITY_BG: Record<string, string> = {
+  P0: 'rgba(255, 90, 31, 0.15)',
+  P1: 'rgba(251, 146, 60, 0.15)',
+  P2: 'rgba(108, 112, 121, 0.15)',
+};
 
 export default function Home() {
   return (
@@ -46,6 +52,7 @@ export default function Home() {
                 </span>
                 <span
                   className={`font-mono text-2xs px-1.5 py-0.5 rounded ${PRIORITY_STYLE[demo.priority]}`}
+                  style={{ backgroundColor: PRIORITY_BG[demo.priority] }}
                 >
                   {demo.priority}
                 </span>

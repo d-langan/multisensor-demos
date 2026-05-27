@@ -112,7 +112,7 @@ export function TimelineScrubber({ phases }: TimelineScrubberProps) {
       </div>
 
       {/* Time display */}
-      <span className="font-mono text-2xs text-text-secondary w-20 text-right tabular-nums">
+      <span className="font-mono text-2xs text-text-secondary w-28 text-right tabular-nums flex-shrink-0">
         {currentTime.toFixed(2)}s / {duration.toFixed(1)}s
       </span>
 

@@ -97,13 +97,13 @@ function SummaryCard({ diagram }: { diagram: ArchDiagramDef }) {
       </div>
       <div className="flex justify-between">
         <span className="text-text-secondary">F/T Encoder</span>
-        <span className="text-right max-w-[200px] truncate">
+        <span className="text-right max-w-[250px] truncate" title={diagram.ft_encoder}>
           {diagram.ft_encoder}
         </span>
       </div>
       <div className="flex justify-between">
         <span className="text-text-secondary">Fusion</span>
-        <span className="text-right max-w-[200px] truncate">
+        <span className="text-right max-w-[250px] truncate" title={diagram.fusion_mechanism}>
           {diagram.fusion_mechanism}
         </span>
       </div>
@@ -163,7 +163,7 @@ export default function ArchitectureDiff() {
       </div>
 
       {/* Two side-by-side diagrams */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="font-mono text-2xs text-text-disabled">Model A</span>

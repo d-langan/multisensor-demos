@@ -64,8 +64,15 @@
 }
 
 .talk-mode {
-  font-size: 20px;
   cursor: crosshair;
+}
+
+.talk-mode .section-title {
+  font-size: var(--text-2xl);
+}
+
+.talk-mode .demo-hero {
+  font-size: 4rem;
 }
 
 .talk-mode body::before {
@@ -75,8 +82,4 @@
 
 .talk-mode .no-talk {
   display: none;
-}
-
-.talk-mode * {
-  animation-play-state: paused !important;
 }

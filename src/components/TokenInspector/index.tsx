@@ -211,7 +211,7 @@ export function TokenInspector({
                     className="h-1 rounded-full"
                     style={{
                       backgroundColor: signalColor,
-                      width: `${40 + Math.random() * 60}%`,
+                      width: `${40 + ((a.charCodeAt(1) * 7 + 13) % 60)}%`,
                       opacity: 0.6,
                     }}
                   />
@@ -263,7 +263,7 @@ export function TokenInspector({
                     className="w-1.5 h-6 rounded-sm"
                     style={{
                       backgroundColor: signalColor,
-                      opacity: 0.3 + Math.random() * 0.7,
+                      opacity: 0.3 + ((i * 7 + 3) % 10) / 10 * 0.7,
                     }}
                   />
                 ),

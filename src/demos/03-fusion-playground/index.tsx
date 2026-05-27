@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { RegistrationMark } from '../../components/RegistrationMark';
-import { FusionAnimator } from '../../components/FusionAnimator';
+import { FusionAnimator, STRATEGY_INFO } from '../../components/FusionAnimator';
 import { PaperRef } from '../../components/PaperRef';
 import { EquationCallout } from '../../components/EquationCallout';
 import type { FusionStrategy } from '../../lib/data/types';
@@ -85,7 +85,7 @@ export default function FusionPlayground() {
         strategy to see how encoded tokens merge.
       </p>
 
-      <div className="grid grid-cols-[200px_1fr_260px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_260px] gap-6">
         {/* Left: strategy selector */}
         <div className="space-y-1">
           <div className="font-mono text-2xs text-text-tertiary mb-2">STRATEGY</div>
@@ -109,8 +109,8 @@ export default function FusionPlayground() {
 
         {/* Center: animation stage */}
         <div>
-          <div className="card-sunken min-h-[320px] flex flex-col">
-            <div className="flex-1">
+          <div className="card-sunken flex flex-col" style={{ height: 440 }}>
+            <div className="flex-1 overflow-hidden flex items-center justify-center">
               <FusionAnimator strategy={strategy} step={step} />
             </div>
 
@@ -143,16 +143,8 @@ export default function FusionPlayground() {
                 >
                   <ChevronLeft size={16} />
                 </button>
-                <div className="flex-1 text-center font-mono text-2xs text-text-secondary">
-                  Step {step + 1}: {/* Get step label from STRATEGY_INFO via FusionAnimator data */}
-                  {
-                    [
-                      'concat', 'projected_concat', 'film', 'cross_attention',
-                      'mmdit_joint', 'contact_gated', 'adaLN_zero', 'classifier_free_guidance',
-                    ].includes(strategy)
-                      ? ['Encode', 'Project / Attend', 'Combine', 'Output'][Math.min(step, 3)]
-                      : `Step ${step + 1}`
-                  }
+                <div className="flex-1 text-center font-mono text-2xs text-text-secondary truncate px-2">
+                  Step {step + 1}: {STRATEGY_INFO[strategy]?.steps[step]?.label ?? ''}
                 </div>
                 <button
                   onClick={nextStep}

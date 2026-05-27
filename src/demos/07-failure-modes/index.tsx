@@ -104,7 +104,7 @@ export default function FailureModes() {
   const m3_30k_observed = 3.29;
 
   return (
-    <div className="container-demo py-8 max-w-4xl">
+    <div className="container-demo py-8 max-w-4xl overflow-x-hidden">
       <div className="flex items-center gap-3 mb-2">
         <RegistrationMark />
         <span className="font-mono text-2xs text-text-disabled">07</span>
@@ -119,20 +119,22 @@ export default function FailureModes() {
         <div className="font-mono text-sm text-text-primary mb-3">
           Deployment Magnitude Formula
         </div>
-        <div className="card-sunken px-4 py-3 font-mono text-sm text-center">
-          <span className="text-text-secondary">deploy_mag_ratio</span>
-          <span className="text-text-tertiary"> = </span>
-          <span className="text-text-primary">train_mag_ratio</span>
-          <span className="text-text-tertiary"> × </span>
-          <span style={{ color: '#fb923c' }}>normalization_compression</span>
-          <span className="text-text-tertiary"> × </span>
-          <span style={{ color: '#60a5fa' }}>checkpoint_collapse</span>
-          <span className="text-text-tertiary"> × </span>
-          <span style={{ color: '#4ade80' }}>chunk_position_factor</span>
+        <div className="card-sunken px-4 py-3 font-mono text-2xs overflow-x-auto">
+          <div className="flex flex-wrap items-center justify-center gap-1">
+            <span className="text-text-secondary">deploy_mag</span>
+            <span className="text-text-tertiary">=</span>
+            <span className="text-text-primary">train_mag</span>
+            <span className="text-text-tertiary">×</span>
+            <span style={{ color: '#fb923c' }}>norm_compress</span>
+            <span className="text-text-tertiary">×</span>
+            <span style={{ color: '#60a5fa' }}>ckpt_collapse</span>
+            <span className="text-text-tertiary">×</span>
+            <span style={{ color: '#4ade80' }}>chunk_pos0</span>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-[1fr_300px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
         {/* Sliders */}
         <div className="space-y-5">
           {PARAMS.map((param) => (

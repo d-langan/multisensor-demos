@@ -76,12 +76,13 @@ export function ArchDiagram({
   const scale = compact ? 0.45 : 1;
 
   return (
-    <div className={compact ? '' : 'overflow-x-auto'}>
+    <div className={compact ? '' : 'overflow-x-auto max-w-full'}>
       <svg
         width={maxX * scale}
         height={maxY * scale}
         viewBox={`0 0 ${maxX} ${maxY}`}
         className="select-none"
+        style={{ maxWidth: '100%', height: 'auto' }}
       >
         <defs>
           <marker
@@ -199,8 +200,8 @@ export function ArchDiagram({
                     fontFamily="var(--font-sans)"
                     fontWeight={500}
                   >
-                    {block.label.length > 24
-                      ? block.label.slice(0, 22) + '…'
+                    {block.label.length > 22
+                      ? block.label.slice(0, 20) + '…'
                       : block.label}
                   </text>
                   <text

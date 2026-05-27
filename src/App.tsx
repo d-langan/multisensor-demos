@@ -8,10 +8,10 @@ export function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="border-b border-border-subtle px-8 py-3 flex items-center gap-4 bg-raised/50 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-border-subtle px-4 md:px-8 py-3 flex items-center gap-3 md:gap-4 bg-raised/50 backdrop-blur-sm sticky top-0 z-50 overflow-hidden">
         <Link to="/" className="flex items-center gap-3 no-underline">
           <RegistrationMark size={18} />
-          <span className="font-mono text-sm text-text-secondary tracking-wide">
+          <span className="font-mono text-xs md:text-sm text-text-secondary tracking-wide whitespace-nowrap overflow-hidden text-ellipsis">
             MULTI-SENSOR LEARNING MODELS
           </span>
         </Link>

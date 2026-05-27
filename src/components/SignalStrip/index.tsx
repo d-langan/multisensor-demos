@@ -222,8 +222,8 @@ function PhaseTrack({ phases, duration }: { phases: Phase[]; duration: number })
               }}
             >
               <span
-                className="font-mono text-2xs"
-                style={{ color: hex, opacity: 1 }}
+                className="font-mono text-2xs overflow-hidden text-ellipsis whitespace-nowrap px-1"
+                style={{ color: hex, opacity: 1, maxWidth: '100%' }}
               >
                 {phase.label}
               </span>
