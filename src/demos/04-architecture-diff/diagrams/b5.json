@@ -1,0 +1,39 @@
+{
+  "model": "b5",
+  "title": "B5 — DP-CA+N (Cross-Attention + Normals)",
+  "params": "300M",
+  "paper": "Kang et al. 2025",
+  "ft_encoder": "Linear 6→6×512",
+  "fusion_mechanism": "Cross-attention + surface normals",
+  "blocks": [
+    { "id": "rgb", "kind": "obs", "label": "RGB (224×224)", "shape": "(3,224,224)", "color": "rgb", "x": 0, "y": 0 },
+    { "id": "normals", "kind": "obs", "label": "Surface Normals", "shape": "(3,224,224)", "color": "normals", "x": 0, "y": 1 },
+    { "id": "ft", "kind": "obs", "label": "F/T (6D)", "shape": "(6,)", "color": "force", "x": 0, "y": 2 },
+    { "id": "tcp", "kind": "obs", "label": "TCP pose (9D)", "shape": "(9,)", "color": "proprio", "x": 0, "y": 4 },
+    { "id": "resnet_rgb", "kind": "encoder", "label": "ResNet-18 (spatial, RGB)", "shape": "(49,512)", "tag": "encoder", "x": 1, "y": 0 },
+    { "id": "resnet_norm", "kind": "encoder", "label": "ResNet-18 (spatial, normals)", "shape": "(49,512)", "tag": "encoder", "color": "normals", "x": 1, "y": 1 },
+    { "id": "vis_concat", "kind": "fusion", "label": "KV Concat", "shape": "(98,512)", "tag": "fusion", "fusion_kind": "concat", "x": 2, "y": 0.5 },
+    { "id": "proj", "kind": "encoder", "label": "Force Projection 6→6×512", "shape": "(6,512)", "tag": "encoder", "color": "force", "x": 1, "y": 2 },
+    { "id": "xattn", "kind": "fusion", "label": "Cross-Attention (4 heads)", "shape": "(6,512)", "tag": "fusion", "fusion_kind": "cross_attention", "x": 3, "y": 1 },
+    { "id": "pool", "kind": "fusion", "label": "AdaptiveAvgPool", "shape": "(512,)", "tag": "fusion", "x": 4, "y": 1 },
+    { "id": "concat", "kind": "fusion", "label": "Concat with TCP × T_obs", "shape": "(1042,)", "tag": "fusion", "x": 4, "y": 3 },
+    { "id": "film", "kind": "cond", "label": "FiLM conditioning", "shape": "—", "tag": "cond", "fusion_kind": "film", "x": 5, "y": 3 },
+    { "id": "unet", "kind": "backbone", "label": "ConditionalUnet1D", "shape": "(16,7)", "tag": "denoiser", "x": 6, "y": 3 },
+    { "id": "action", "kind": "output", "label": "v-prediction → action", "shape": "(16,7)", "color": "action", "x": 7, "y": 3 }
+  ],
+  "edges": [
+    { "from": "rgb", "to": "resnet_rgb" },
+    { "from": "normals", "to": "resnet_norm" },
+    { "from": "resnet_rgb", "to": "vis_concat" },
+    { "from": "resnet_norm", "to": "vis_concat" },
+    { "from": "ft", "to": "proj" },
+    { "from": "vis_concat", "to": "xattn", "label": "K, V" },
+    { "from": "proj", "to": "xattn", "label": "Q" },
+    { "from": "xattn", "to": "pool" },
+    { "from": "pool", "to": "concat" },
+    { "from": "tcp", "to": "concat" },
+    { "from": "concat", "to": "film" },
+    { "from": "film", "to": "unet" },
+    { "from": "unet", "to": "action" }
+  ]
+}

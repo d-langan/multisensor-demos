@@ -1,0 +1,27 @@
+{
+  "model": "b2",
+  "title": "B2 — DP-LF (Late Fusion)",
+  "params": "263M",
+  "paper": "Kang et al. 2025",
+  "ft_encoder": "None (raw 6D concat)",
+  "fusion_mechanism": "Flat concat (vision + F/T + proprio)",
+  "blocks": [
+    { "id": "rgb", "kind": "obs", "label": "RGB (224×224)", "shape": "(3,224,224)", "color": "rgb", "x": 0, "y": 0 },
+    { "id": "ft", "kind": "obs", "label": "F/T (6D)", "shape": "(6,)", "color": "force", "x": 0, "y": 1 },
+    { "id": "tcp", "kind": "obs", "label": "TCP pose (9D)", "shape": "(9,)", "color": "proprio", "x": 0, "y": 2 },
+    { "id": "resnet", "kind": "encoder", "label": "ResNet-18 + SpatialSoftmax", "shape": "(64,)", "tag": "encoder", "x": 1, "y": 0 },
+    { "id": "concat", "kind": "fusion", "label": "Concat × T_obs", "shape": "(158,)", "tag": "fusion", "fusion_kind": "concat", "x": 2, "y": 1 },
+    { "id": "film", "kind": "cond", "label": "FiLM conditioning", "shape": "—", "tag": "cond", "fusion_kind": "film", "x": 3, "y": 1 },
+    { "id": "unet", "kind": "backbone", "label": "ConditionalUnet1D", "shape": "(16,7)", "tag": "denoiser", "x": 4, "y": 1 },
+    { "id": "action", "kind": "output", "label": "v-prediction → action", "shape": "(16,7)", "color": "action", "x": 5, "y": 1 }
+  ],
+  "edges": [
+    { "from": "rgb", "to": "resnet" },
+    { "from": "resnet", "to": "concat" },
+    { "from": "ft", "to": "concat" },
+    { "from": "tcp", "to": "concat" },
+    { "from": "concat", "to": "film" },
+    { "from": "film", "to": "unet" },
+    { "from": "unet", "to": "action" }
+  ]
+}

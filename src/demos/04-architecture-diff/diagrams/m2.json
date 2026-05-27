@@ -1,0 +1,37 @@
+{
+  "model": "m2",
+  "title": "M2 — DECO (Decoupled MMDiT)",
+  "params": "23M",
+  "paper": "Li et al. 2025",
+  "ft_encoder": "MLP 180→256→128→64",
+  "fusion_mechanism": "adaLN-Zero + joint self-attn + F/T cross-attn adapter",
+  "blocks": [
+    { "id": "rgb", "kind": "obs", "label": "RGB (224×224)", "shape": "(3,224,224)", "color": "rgb", "x": 0, "y": 0 },
+    { "id": "ft", "kind": "obs", "label": "F/T window (30×6)", "shape": "(30,6)", "color": "force", "x": 0, "y": 1 },
+    { "id": "tcp", "kind": "obs", "label": "TCP pose (9D)", "shape": "(9,)", "color": "proprio", "x": 0, "y": 2 },
+    { "id": "rgb_enc", "kind": "encoder", "label": "ResNet-18 + SS → 64D", "shape": "(64,)", "tag": "encoder", "x": 1, "y": 0 },
+    { "id": "ft_enc", "kind": "encoder", "label": "ForceTorqueEncoder MLP", "shape": "(64,)", "tag": "encoder", "color": "force", "x": 1, "y": 1 },
+    { "id": "proprio_enc", "kind": "encoder", "label": "ProprioEncoder MLP", "shape": "(64,)", "tag": "encoder", "color": "proprio", "x": 1, "y": 2 },
+    { "id": "proj_obs", "kind": "encoder", "label": "Obs projection 64→256", "shape": "(256,)", "tag": "encoder", "x": 2, "y": 0 },
+    { "id": "proj_ft", "kind": "encoder", "label": "F/T projection 64→256", "shape": "(256,)", "tag": "encoder", "x": 2, "y": 1 },
+    { "id": "adaln", "kind": "cond", "label": "adaLN-Zero (proprio + t)", "shape": "6×256", "tag": "cond", "fusion_kind": "adaLN_zero", "x": 3, "y": 2 },
+    { "id": "dit_blocks", "kind": "backbone", "label": "8× DECOBlock (joint self-attn)", "shape": "(N,256)", "tag": "denoiser", "fusion_kind": "mmdit_joint", "x": 3, "y": 0.5 },
+    { "id": "ft_adapter", "kind": "fusion", "label": "F/T Cross-Attn Adapter", "shape": "(N,256)", "tag": "fusion", "fusion_kind": "cross_attention", "x": 4, "y": 1 },
+    { "id": "flow", "kind": "backbone", "label": "Rectified Flow Matching", "shape": "(16,7)", "tag": "denoiser", "x": 5, "y": 0.5 },
+    { "id": "action", "kind": "output", "label": "Action chunk", "shape": "(16,7)", "color": "action", "x": 6, "y": 0.5 }
+  ],
+  "edges": [
+    { "from": "rgb", "to": "rgb_enc" },
+    { "from": "ft", "to": "ft_enc" },
+    { "from": "tcp", "to": "proprio_enc" },
+    { "from": "rgb_enc", "to": "proj_obs" },
+    { "from": "ft_enc", "to": "proj_ft" },
+    { "from": "proj_obs", "to": "dit_blocks", "label": "obs tokens" },
+    { "from": "proprio_enc", "to": "adaln" },
+    { "from": "adaln", "to": "dit_blocks", "label": "γ, β, α" },
+    { "from": "dit_blocks", "to": "ft_adapter" },
+    { "from": "proj_ft", "to": "ft_adapter", "label": "F/T KV" },
+    { "from": "ft_adapter", "to": "flow" },
+    { "from": "flow", "to": "action" }
+  ]
+}

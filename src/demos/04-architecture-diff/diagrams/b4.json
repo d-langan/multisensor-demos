@@ -1,0 +1,33 @@
+{
+  "model": "b4",
+  "title": "B4 — DP-CA (Cross-Attention)",
+  "params": "290M",
+  "paper": "Kang et al. 2025",
+  "ft_encoder": "Linear 6→6×512",
+  "fusion_mechanism": "Cross-attention (F/T Q → image KV)",
+  "blocks": [
+    { "id": "rgb", "kind": "obs", "label": "RGB (224×224)", "shape": "(3,224,224)", "color": "rgb", "x": 0, "y": 0 },
+    { "id": "ft", "kind": "obs", "label": "F/T (6D)", "shape": "(6,)", "color": "force", "x": 0, "y": 1 },
+    { "id": "tcp", "kind": "obs", "label": "TCP pose (9D)", "shape": "(9,)", "color": "proprio", "x": 0, "y": 3 },
+    { "id": "resnet", "kind": "encoder", "label": "ResNet-18 (spatial)", "shape": "(49,512)", "tag": "encoder", "x": 1, "y": 0 },
+    { "id": "proj", "kind": "encoder", "label": "Force Projection 6→6×512", "shape": "(6,512)", "tag": "encoder", "color": "force", "x": 1, "y": 1 },
+    { "id": "xattn", "kind": "fusion", "label": "Cross-Attention (4 heads)", "shape": "(6,512)", "tag": "fusion", "fusion_kind": "cross_attention", "x": 2, "y": 0.5 },
+    { "id": "pool", "kind": "fusion", "label": "AdaptiveAvgPool", "shape": "(512,)", "tag": "fusion", "x": 3, "y": 0.5 },
+    { "id": "concat", "kind": "fusion", "label": "Concat with TCP × T_obs", "shape": "(1042,)", "tag": "fusion", "fusion_kind": "concat", "x": 3, "y": 2 },
+    { "id": "film", "kind": "cond", "label": "FiLM conditioning", "shape": "—", "tag": "cond", "fusion_kind": "film", "x": 4, "y": 2 },
+    { "id": "unet", "kind": "backbone", "label": "ConditionalUnet1D", "shape": "(16,7)", "tag": "denoiser", "x": 5, "y": 2 },
+    { "id": "action", "kind": "output", "label": "v-prediction → action", "shape": "(16,7)", "color": "action", "x": 6, "y": 2 }
+  ],
+  "edges": [
+    { "from": "rgb", "to": "resnet" },
+    { "from": "ft", "to": "proj" },
+    { "from": "resnet", "to": "xattn", "label": "K, V" },
+    { "from": "proj", "to": "xattn", "label": "Q" },
+    { "from": "xattn", "to": "pool" },
+    { "from": "pool", "to": "concat" },
+    { "from": "tcp", "to": "concat" },
+    { "from": "concat", "to": "film" },
+    { "from": "film", "to": "unet" },
+    { "from": "unet", "to": "action" }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "model": "m4",
+  "title": "M4 — Octo (Pretrained Foundation Model)",
+  "params": "93M",
+  "paper": "Ghosh et al. 2024",
+  "ft_encoder": "LowdimObsTokenizer (256-bin quantize)",
+  "fusion_mechanism": "Native multimodal transformer",
+  "blocks": [
+    { "id": "rgb", "kind": "obs", "label": "RGB (256×256)", "shape": "(3,256,256)", "color": "rgb", "x": 0, "y": 0 },
+    { "id": "ft", "kind": "obs", "label": "F/T (6D)", "shape": "(6,)", "color": "force", "x": 0, "y": 1 },
+    { "id": "tcp", "kind": "obs", "label": "TCP pose (9D)", "shape": "(9,)", "color": "proprio", "x": 0, "y": 2 },
+    { "id": "task", "kind": "obs", "label": "Task instruction", "shape": "text", "x": 0, "y": 3 },
+    { "id": "vis_enc", "kind": "encoder", "label": "Octo Vision Tower", "shape": "(N_v,768)", "tag": "encoder", "x": 1, "y": 0 },
+    { "id": "ft_tok", "kind": "encoder", "label": "LowdimTokenizer (256-bin)", "shape": "(6,768)", "tag": "encoder", "color": "force", "x": 1, "y": 1 },
+    { "id": "proprio_tok", "kind": "encoder", "label": "LowdimTokenizer (proprio)", "shape": "(9,768)", "tag": "encoder", "color": "proprio", "x": 1, "y": 2 },
+    { "id": "t5", "kind": "encoder", "label": "T5 (frozen)", "shape": "(N_t,768)", "tag": "encoder", "x": 1, "y": 3 },
+    { "id": "transformer", "kind": "backbone", "label": "Octo Transformer (pretrained)", "shape": "(N,768)", "tag": "denoiser", "fusion_kind": "mmdit_joint", "x": 3, "y": 1 },
+    { "id": "l1_head", "kind": "output", "label": "L1 Action Head", "shape": "(4,7)", "color": "action", "x": 5, "y": 1 }
+  ],
+  "edges": [
+    { "from": "rgb", "to": "vis_enc" },
+    { "from": "ft", "to": "ft_tok" },
+    { "from": "tcp", "to": "proprio_tok" },
+    { "from": "task", "to": "t5" },
+    { "from": "vis_enc", "to": "transformer" },
+    { "from": "ft_tok", "to": "transformer" },
+    { "from": "proprio_tok", "to": "transformer" },
+    { "from": "t5", "to": "transformer" },
+    { "from": "transformer", "to": "l1_head" }
+  ]
+}

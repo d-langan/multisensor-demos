@@ -1,0 +1,39 @@
+{
+  "model": "m3",
+  "title": "M3 — FoAR (Force-Aware 3D DP)",
+  "params": "37.6M",
+  "paper": "He et al. 2025",
+  "ft_encoder": "MLP + Force Transformer (2-layer self-attn)",
+  "fusion_mechanism": "Contact-gated concat + DP3",
+  "blocks": [
+    { "id": "rgb", "kind": "obs", "label": "RGB (224×224)", "shape": "(3,224,224)", "color": "rgb", "x": 0, "y": 0 },
+    { "id": "ft", "kind": "obs", "label": "F/T window (30×6)", "shape": "(30,6)", "color": "force", "x": 0, "y": 1 },
+    { "id": "tcp", "kind": "obs", "label": "TCP pose (9D)", "shape": "(9,)", "color": "proprio", "x": 0, "y": 3 },
+    { "id": "pc", "kind": "obs", "label": "Point Cloud (1024×3)", "shape": "(1024,3)", "color": "pc", "x": 0, "y": 4 },
+    { "id": "resnet", "kind": "encoder", "label": "ResNet-18 + SS → 64D", "shape": "(64,)", "tag": "encoder", "x": 1, "y": 0 },
+    { "id": "ft_mlp", "kind": "encoder", "label": "FoARFTEncoder MLP", "shape": "(30,128)", "tag": "encoder", "color": "force", "x": 1, "y": 1 },
+    { "id": "force_xfmr", "kind": "encoder", "label": "Force Transformer (2L, 4H)", "shape": "(64,)", "tag": "encoder", "color": "force", "fusion_kind": "cross_attention", "x": 2, "y": 1 },
+    { "id": "contact_gate", "kind": "fusion", "label": "FoAR ContactGate (φ)", "shape": "scalar", "tag": "fusion", "fusion_kind": "contact_gated", "color": "force", "x": 3, "y": 1 },
+    { "id": "proprio_enc", "kind": "encoder", "label": "ProprioEncoder MLP", "shape": "(64,)", "tag": "encoder", "color": "proprio", "x": 1, "y": 3 },
+    { "id": "pc_enc", "kind": "encoder", "label": "DP3 MLP + MaxPool", "shape": "(64,)", "tag": "encoder", "color": "pc", "x": 1, "y": 4 },
+    { "id": "concat", "kind": "fusion", "label": "Gated Concat", "shape": "(256,)", "tag": "fusion", "fusion_kind": "concat", "x": 4, "y": 2 },
+    { "id": "film", "kind": "cond", "label": "FiLM conditioning", "shape": "—", "tag": "cond", "fusion_kind": "film", "x": 5, "y": 2 },
+    { "id": "unet", "kind": "backbone", "label": "ConditionalUnet1D", "shape": "(16,7)", "tag": "denoiser", "x": 6, "y": 2 },
+    { "id": "action", "kind": "output", "label": "v-prediction → action", "shape": "(16,7)", "color": "action", "x": 7, "y": 2 }
+  ],
+  "edges": [
+    { "from": "rgb", "to": "resnet" },
+    { "from": "ft", "to": "ft_mlp" },
+    { "from": "ft_mlp", "to": "force_xfmr" },
+    { "from": "force_xfmr", "to": "contact_gate" },
+    { "from": "tcp", "to": "proprio_enc" },
+    { "from": "pc", "to": "pc_enc" },
+    { "from": "resnet", "to": "concat" },
+    { "from": "contact_gate", "to": "concat", "label": "φ·ft_embed" },
+    { "from": "proprio_enc", "to": "concat" },
+    { "from": "pc_enc", "to": "concat" },
+    { "from": "concat", "to": "film" },
+    { "from": "film", "to": "unet" },
+    { "from": "unet", "to": "action" }
+  ]
+}

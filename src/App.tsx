@@ -1,5 +1,6 @@
 import { Outlet, Link } from 'react-router-dom';
 import { RegistrationMark } from './components/RegistrationMark';
+import { TalkModeOverlay } from './components/TalkModeOverlay';
 import { useTalkMode } from './lib/useTalkMode';
 
 export function App() {
@@ -25,6 +26,8 @@ export function App() {
           <span className="font-mono text-2xs text-accent">TALK MODE</span>
         )}
       </header>
+
+      <TalkModeOverlay />
 
       <main className="flex-1">
         <Outlet />

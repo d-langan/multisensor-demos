@@ -1,0 +1,39 @@
+{
+  "model": "m1",
+  "title": "M1 — ACT + Contact-Gated CFG",
+  "params": "52M",
+  "paper": "Lei et al. 2026",
+  "ft_encoder": "MLP 180→256→128→64",
+  "fusion_mechanism": "Contact-gated classifier-free guidance",
+  "blocks": [
+    { "id": "rgb", "kind": "obs", "label": "RGB (224×224)", "shape": "(3,224,224)", "color": "rgb", "x": 0, "y": 0 },
+    { "id": "ft", "kind": "obs", "label": "F/T window (30×6)", "shape": "(30,6)", "color": "force", "x": 0, "y": 1 },
+    { "id": "tcp", "kind": "obs", "label": "TCP pose (9D)", "shape": "(9,)", "color": "proprio", "x": 0, "y": 2 },
+    { "id": "resnet", "kind": "encoder", "label": "ResNet-18 (11.7M)", "shape": "(512,)", "tag": "encoder", "x": 1, "y": 0 },
+    { "id": "ft_enc", "kind": "encoder", "label": "ForceTorqueEncoder MLP", "shape": "(64,)", "tag": "encoder", "color": "force", "x": 1, "y": 1 },
+    { "id": "contact_gate", "kind": "fusion", "label": "ContactGate (φ)", "shape": "scalar", "tag": "fusion", "fusion_kind": "contact_gated", "color": "force", "x": 2, "y": 1 },
+    { "id": "scale_pred", "kind": "fusion", "label": "Scale Predictor", "shape": "scalar", "tag": "fusion", "fusion_kind": "cfg", "x": 2, "y": 2 },
+    { "id": "cvae_enc", "kind": "backbone", "label": "CVAE Encoder (4-layer)", "shape": "(32,)", "tag": "encoder", "x": 3, "y": 0 },
+    { "id": "cvae_dec", "kind": "backbone", "label": "CVAE Decoder (1-layer)", "shape": "(100,7)", "tag": "denoiser", "x": 4, "y": 0 },
+    { "id": "cond_pass", "kind": "backbone", "label": "Conditional fwd", "shape": "(100,7)", "tag": "denoiser", "x": 4, "y": 1 },
+    { "id": "uncond_pass", "kind": "backbone", "label": "Unconditional fwd", "shape": "(100,7)", "tag": "denoiser", "x": 4, "y": 2 },
+    { "id": "cfg_blend", "kind": "fusion", "label": "CFG blend: a_u + w·(a_c − a_u)", "shape": "(100,7)", "tag": "fusion", "fusion_kind": "cfg", "x": 5, "y": 1.5 },
+    { "id": "action", "kind": "output", "label": "Action chunk (exec 8)", "shape": "(100,7)", "color": "action", "x": 6, "y": 1.5 }
+  ],
+  "edges": [
+    { "from": "rgb", "to": "resnet" },
+    { "from": "ft", "to": "ft_enc" },
+    { "from": "ft_enc", "to": "contact_gate" },
+    { "from": "contact_gate", "to": "scale_pred" },
+    { "from": "resnet", "to": "cvae_enc" },
+    { "from": "tcp", "to": "cvae_enc" },
+    { "from": "cvae_enc", "to": "cvae_dec" },
+    { "from": "ft_enc", "to": "cond_pass", "label": "ft_embed" },
+    { "from": "cvae_dec", "to": "cond_pass" },
+    { "from": "cvae_dec", "to": "uncond_pass" },
+    { "from": "cond_pass", "to": "cfg_blend" },
+    { "from": "uncond_pass", "to": "cfg_blend" },
+    { "from": "scale_pred", "to": "cfg_blend", "label": "w" },
+    { "from": "cfg_blend", "to": "action" }
+  ]
+}
