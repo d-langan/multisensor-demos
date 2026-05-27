@@ -237,6 +237,9 @@ function PhaseTrack({ phases, duration }: { phases: Phase[]; duration: number })
 
 function RgbTrack({ muted }: { muted: boolean }) {
   const { currentTime } = useTimeline();
+  // 10 Hz frames: every 3rd frame at 30Hz, so frame index = floor(t * 10)
+  const frameIdx = Math.floor(currentTime * 10);
+  const frameSrc = `./data/episode_19/rgb/${String(frameIdx).padStart(4, '0')}.png`;
 
   if (muted) {
     return (
@@ -261,15 +264,19 @@ function RgbTrack({ muted }: { muted: boolean }) {
       style={{ height: 80 }}
     >
       <div
-        className="flex-shrink-0 font-mono text-2xs px-2 text-right"
+        className="flex-shrink-0 font-mono text-2xs px-2 text-right flex flex-col items-end justify-center"
         style={{ width: LABEL_WIDTH, color: MODALITY_HEX.rgb }}
       >
-        RGB
+        <span>RGB</span>
+        <span className="text-text-disabled">{currentTime.toFixed(1)}s</span>
       </div>
-      <div className="flex-1 h-full bg-sunken flex items-center justify-center">
-        <span className="font-mono text-2xs text-text-disabled">
-          t={currentTime.toFixed(2)}s
-        </span>
+      <div className="flex-1 h-full bg-sunken flex items-center gap-2 px-2">
+        <img
+          src={frameSrc}
+          alt={`frame ${frameIdx}`}
+          className="h-full object-contain rounded"
+          style={{ imageRendering: 'auto' }}
+        />
       </div>
     </div>
   );
