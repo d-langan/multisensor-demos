@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -240,6 +240,14 @@ function RgbTrack({ muted }: { muted: boolean }) {
   // 10 Hz frames: every 3rd frame at 30Hz, so frame index = floor(t * 10)
   const frameIdx = Math.floor(currentTime * 10);
   const frameSrc = `./data/episode_19/rgb/${String(frameIdx).padStart(4, '0')}.png`;
+
+  // Preload nearby frames for smooth scrubbing
+  useEffect(() => {
+    for (let offset = 1; offset <= 5; offset++) {
+      const img = new Image();
+      img.src = `./data/episode_19/rgb/${String(frameIdx + offset).padStart(4, '0')}.png`;
+    }
+  }, [frameIdx]);
 
   if (muted) {
     return (

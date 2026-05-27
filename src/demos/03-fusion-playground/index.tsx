@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { RegistrationMark } from '../../components/RegistrationMark';
 import { FusionAnimator } from '../../components/FusionAnimator';
 import { PaperRef } from '../../components/PaperRef';
+import { EquationCallout } from '../../components/EquationCallout';
 import type { FusionStrategy } from '../../lib/data/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -171,9 +172,51 @@ export default function FusionPlayground() {
             <h3 className="font-mono text-xs text-text-primary mb-2">
               {currentStrategyInfo.label}
             </h3>
-            <p className="text-text-secondary text-2xs leading-relaxed">
+            <p className="text-text-secondary text-2xs leading-relaxed mb-3">
               {ANNOTATIONS[strategy]}
             </p>
+            {strategy === 'cross_attention' && (
+              <div className="space-y-1">
+                <EquationCallout tex="\text{Attn}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right) V" display />
+                <div className="font-mono text-2xs text-text-disabled text-center">Q: force (6×512) · K,V: image (49×512)</div>
+              </div>
+            )}
+            {strategy === 'contact_gated' && (
+              <div className="space-y-1">
+                <EquationCallout tex="\mathbf{f}_{\text{gated}} = \varphi \cdot \mathbf{f}_{\text{embed}} + (1 - \varphi) \cdot \mathbf{f}_{\text{null}}" display />
+                <div className="font-mono text-2xs text-text-disabled text-center">φ ∈ [0,1] from |F| threshold</div>
+              </div>
+            )}
+            {strategy === 'classifier_free_guidance' && (
+              <div className="space-y-1">
+                <EquationCallout tex="\mathbf{a} = \mathbf{a}_u + w \cdot (\mathbf{a}_c - \mathbf{a}_u)" display />
+                <div className="font-mono text-2xs text-text-disabled text-center">w = 1 + φ·α·softplus(w_scale)</div>
+              </div>
+            )}
+            {strategy === 'adaLN_zero' && (
+              <div className="space-y-1">
+                <EquationCallout tex="\mathbf{h} = (1 + \gamma) \cdot \text{LN}(\mathbf{x}) + \beta" display />
+                <div className="font-mono text-2xs text-text-disabled text-center">γ, β, α from MLP(cond), α gates residual</div>
+              </div>
+            )}
+            {strategy === 'film' && (
+              <div className="space-y-1">
+                <EquationCallout tex="\mathbf{h}_i = \gamma_i \cdot \mathbf{h}_i + \beta_i" display />
+                <div className="font-mono text-2xs text-text-disabled text-center">Per-channel affine modulation</div>
+              </div>
+            )}
+            {strategy === 'mmdit_joint' && (
+              <div className="space-y-1">
+                <EquationCallout tex="[\mathbf{o}', \mathbf{a}'] = \text{Attn}([\mathbf{o}, \mathbf{a}])" display />
+                <div className="font-mono text-2xs text-text-disabled text-center">Both modalities updated jointly</div>
+              </div>
+            )}
+            {(strategy === 'concat' || strategy === 'projected_concat') && (
+              <div className="space-y-1">
+                <EquationCallout tex="\mathbf{z} = [\mathbf{e}_v ; \mathbf{e}_f ; \mathbf{e}_p]" display />
+                <div className="font-mono text-2xs text-text-disabled text-center">Simple vector concatenation</div>
+              </div>
+            )}
           </div>
 
           <div className="card-sunken">

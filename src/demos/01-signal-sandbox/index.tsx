@@ -1,10 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
+import { LineChart, Line, ResponsiveContainer, ReferenceLine, YAxis } from 'recharts';
 import { RegistrationMark } from '../../components/RegistrationMark';
 import { SignalStrip, type TrackConfig } from '../../components/SignalStrip';
 import { TimelineScrubber } from '../../components/TimelineScrubber';
 import { TimelineProvider, useTimeline } from '../../lib/time/TimelineContext';
 import { ModalityChip } from '../../components/ModalityChip';
 import { PaperRef } from '../../components/PaperRef';
+import { EquationCallout } from '../../components/EquationCallout';
 import { useEpisode } from '../../lib/data/useEpisode';
 import { MODALITY_HEX, type ModalityKey } from '../../lib/viz/colors';
 
@@ -67,9 +69,22 @@ function StressMomentCard({
             className="font-mono text-2xs mb-1"
             style={{ color: MODALITY_HEX.rgb }}
           >
-            RGB
+            RGB (before → after)
           </div>
-          <div className="text-text-disabled text-sm">Barely changes</div>
+          <div className="flex gap-2">
+            <img
+              src={`./data/episode_19/rgb/${String(Math.max(0, Math.floor((tCenter - 1) * 10))).padStart(4, '0')}.png`}
+              alt="before"
+              className="w-16 h-16 rounded object-cover"
+            />
+            <span className="self-center text-text-disabled">→</span>
+            <img
+              src={`./data/episode_19/rgb/${String(Math.floor((tCenter + 0.5) * 10)).padStart(4, '0')}.png`}
+              alt="after"
+              className="w-16 h-16 rounded object-cover"
+            />
+          </div>
+          <div className="text-text-disabled text-2xs mt-1">Nearly identical</div>
         </div>
         <div className="card-sunken p-3">
           <div
@@ -78,7 +93,8 @@ function StressMomentCard({
           >
             TCP pose
           </div>
-          <div className="text-text-disabled text-sm">Barely changes</div>
+          <div className="text-text-disabled text-sm mt-2">Barely changes</div>
+          <div className="font-mono text-2xs text-text-disabled mt-1">Δpos &lt; 1 mm</div>
         </div>
         <div className="card-sunken p-3 border border-modality-force/30">
           <div
@@ -89,6 +105,15 @@ function StressMomentCard({
           </div>
           <div className="text-lg font-semibold" style={{ color: MODALITY_HEX.force }}>
             {fzBefore.toFixed(0)} N → {fzAfter.toFixed(0)} N
+          </div>
+          <div style={{ height: 40 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={fzData.slice(Math.max(0, jumpIdx - 60), jumpIdx + 60)}>
+                <YAxis domain={['auto', 'auto']} hide />
+                <Line dataKey="v" stroke={MODALITY_HEX.force} dot={false} strokeWidth={1.5} isAnimationActive={false} />
+                <ReferenceLine x={fzData[jumpIdx]?.t} stroke="var(--accent)" strokeWidth={1} strokeDasharray="2 2" />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
@@ -200,7 +225,35 @@ export default function SignalSandbox() {
 
         <SignalSandboxInner />
 
-        <div className="mt-8 text-text-tertiary text-sm">
+        {/* Data format sidebar */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="card-sunken">
+            <div className="font-mono text-2xs text-text-tertiary mb-1">F/T SENSOR</div>
+            <div className="font-mono text-2xs text-text-secondary space-y-0.5">
+              <div>ATI SI-1500-240, 6-axis</div>
+              <div>Raw 1 kHz → 30 Hz for policy I/O</div>
+              <div>Fz convention: <span style={{ color: MODALITY_HEX.force }}>negative = into surface</span></div>
+            </div>
+          </div>
+          <div className="card-sunken">
+            <div className="font-mono text-2xs text-text-tertiary mb-1">TCP POSE</div>
+            <div className="font-mono text-2xs text-text-secondary space-y-0.5">
+              <div>9D = 3D position + 6D rotation</div>
+              <div><EquationCallout tex="R \in \text{SO}(3) \to [r_1, r_2] \in \mathbb{R}^6" /></div>
+              <div>Zhou et al. 2019 continuous repr.</div>
+            </div>
+          </div>
+          <div className="card-sunken">
+            <div className="font-mono text-2xs text-text-tertiary mb-1">ACTIONS</div>
+            <div className="font-mono text-2xs text-text-secondary space-y-0.5">
+              <div>7D delta: [dx,dy,dz,droll,dpitch,dyaw,Fz]</div>
+              <div>Position + Euler delta + absolute Fz setpoint</div>
+              <div>H=16 chunk, 8 executed</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 text-text-tertiary text-sm no-talk">
           <p className="font-mono text-2xs mb-2">KEYBOARD</p>
           <p>
             Space = play/pause · ←→ = ±0.1s · [ ] = speed · Click channel

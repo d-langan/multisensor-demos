@@ -14,7 +14,7 @@ export const MODALITY_HEX = {
   depth: '#a78bfa',
   normals: '#c4b5fd',
   force: '#fb923c',
-  torque: '#f87171',
+  torque: '#e879f9',
   proprio: '#60a5fa',
   action: '#fbbf24',
   pc: '#22d3ee',

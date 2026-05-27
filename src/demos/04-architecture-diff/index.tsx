@@ -239,27 +239,76 @@ export default function ArchitectureDiff() {
       {/* Block detail panel */}
       {selectedBlock && (
         <div className="mt-4 card border-accent/30">
-          <h3 className="font-mono text-xs text-accent mb-2">
-            Block: {selectedBlock.label}
-          </h3>
-          <div className="grid grid-cols-2 gap-4 font-mono text-2xs">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-mono text-xs text-accent">
+              Block: {selectedBlock.label}
+            </h3>
+            <button
+              onClick={() => setSelectedBlock(null)}
+              className="font-mono text-2xs text-text-disabled hover:text-text-secondary"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-2xs">
             <div>
-              <span className="text-text-secondary">ID:</span>{' '}
-              {selectedBlock.id}
+              <span className="text-text-tertiary block">ID</span>
+              <span className="text-text-primary">{selectedBlock.id}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Kind:</span>{' '}
-              {selectedBlock.kind}
+              <span className="text-text-tertiary block">Kind</span>
+              <span className="text-text-primary">{selectedBlock.kind}</span>
             </div>
             <div>
-              <span className="text-text-secondary">Shape:</span>{' '}
-              {selectedBlock.shape}
+              <span className="text-text-tertiary block">Shape</span>
+              <span className="text-text-primary">{selectedBlock.shape}</span>
             </div>
             {selectedBlock.fusion_kind && (
               <div>
-                <span className="text-text-secondary">Fusion:</span>{' '}
-                {selectedBlock.fusion_kind}
+                <span className="text-text-tertiary block">Fusion type</span>
+                <span className="text-accent">{selectedBlock.fusion_kind}</span>
               </div>
+            )}
+            {selectedBlock.color && (
+              <div>
+                <span className="text-text-tertiary block">Modality</span>
+                <span style={{ color: `var(--color-${selectedBlock.color})` }}>
+                  {selectedBlock.color}
+                </span>
+              </div>
+            )}
+          </div>
+          {/* Code references based on block type */}
+          <div className="mt-3 pt-3 border-t border-border-subtle font-mono text-2xs text-text-disabled">
+            {selectedBlock.kind === 'encoder' && selectedBlock.id.includes('resnet') && (
+              <span>scripts/shared_encoders.py → RGBEncoder (ResNet-18 + SpatialSoftmax)</span>
+            )}
+            {selectedBlock.kind === 'encoder' && selectedBlock.id.includes('ft') && (
+              <span>scripts/shared_encoders.py → ForceTorqueEncoder (MLP 180→256→128→64)</span>
+            )}
+            {selectedBlock.kind === 'encoder' && selectedBlock.id.includes('proprio') && (
+              <span>scripts/shared_encoders.py → ProprioceptionEncoder (Linear 9→128→64)</span>
+            )}
+            {selectedBlock.id === 'xattn' && (
+              <span>lerobot_policy_b4/modeling_b4.py → VisionForceCA (MultiheadAttention, 4 heads)</span>
+            )}
+            {selectedBlock.id === 'unet' && (
+              <span>ConditionalUnet1D — Chi et al. 2023 (Diffusion Policy)</span>
+            )}
+            {selectedBlock.id === 'contact_gate' && (
+              <span>lerobot_policy_foar/contact_gate.py → FoARContactGate</span>
+            )}
+            {selectedBlock.id === 'force_xfmr' && (
+              <span>lerobot_policy_foar/force_transformer.py → ForceTransformer (2L self-attn)</span>
+            )}
+            {selectedBlock.id === 'transformer' && (
+              <span>Octo-Base pretrained (93M params, Ghosh et al. 2024)</span>
+            )}
+            {selectedBlock.id === 'dit_blocks' && (
+              <span>lerobot_policy_deco/deco_block.py → DECOBlock (8 layers, joint self-attn)</span>
+            )}
+            {selectedBlock.id === 'cfg_blend' && (
+              <span>lerobot_policy_act_contact/modeling_act_contact.py → CFG blending</span>
             )}
           </div>
         </div>
