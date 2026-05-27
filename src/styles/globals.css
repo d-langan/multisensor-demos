@@ -1,0 +1,112 @@
+@import 'tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  /* Grid-line background pattern — workbench aesthetic */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  ::selection {
+    background-color: rgba(255, 90, 31, 0.3);
+    color: var(--text-primary);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-sunken);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+  }
+}
+
+@layer components {
+  .container-demo {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .card {
+    background-color: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+
+  .card-sunken {
+    background-color: var(--bg-sunken);
+    border: 1px solid var(--border-subtle);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+
+  .data-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+  }
+
+  .section-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+
+  .demo-hero {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+}

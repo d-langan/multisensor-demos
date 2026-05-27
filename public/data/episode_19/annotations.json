@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "generated_from": "mock_data_generator",
+    "extraction_script": "scripts/generate_mock_data.ts",
+    "extracted_at": "2026-05-27",
+    "git_sha": "mock",
+    "schema_version": 1
+  },
+  "phases": [
+    {
+      "label": "approach",
+      "t_start": 0,
+      "t_end": 14
+    },
+    {
+      "label": "contact",
+      "t_start": 14,
+      "t_end": 42
+    },
+    {
+      "label": "retract",
+      "t_start": 42,
+      "t_end": 50
+    }
+  ],
+  "contact_threshold_N": 5,
+  "fz_setpoint_N": -30
+}
