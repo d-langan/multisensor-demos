@@ -13,6 +13,8 @@ const PAPERS = [
   { anchor: 'Liu et al. 2025', arxiv: '2502.17432', venue: 'RSS', note: 'FACTR curriculum' },
   { anchor: 'Zhang et al. 2024', arxiv: '2410.01220', venue: '', note: 'L1 vs diffusion at <50 demos' },
   { anchor: 'Diaz et al. 2024', arxiv: '2410.14968', venue: '', note: 'AugInsert framework' },
+  { anchor: 'Vig 2019', arxiv: '1906.05714', venue: 'ACL', note: 'BertViz attention head view' },
+  { anchor: 'Abnar & Zuidema 2020', arxiv: '2005.00928', venue: 'ACL', note: 'Attention rollout' },
 ];
 
 export default function About() {
@@ -33,10 +35,21 @@ export default function About() {
         </p>
 
         <p>
-          The seven demos walk through a pedagogical ladder: raw signals →
-          encoders → fusion mechanisms → full architectures → behavioral
-          consequences. Each demo answers one question about how multi-modal
-          robotics perception works.
+          Thirteen demos walk through a pedagogical ladder: raw signals →
+          encoders → fusion mechanisms → Kang's four-variant comparison →
+          FoAR / Octo / DECO → behavioral consequences → a design-space map.
+          Each demo answers one question about how multi-modal robotics
+          perception works — made legible by <em>what attends to what</em>.
+        </p>
+
+        <p className="font-mono text-2xs text-text-disabled">
+          Note on conventions: the Force Integration Ladder follows Kang et
+          al.'s reported architecture and success rates (4-element force,
+          0.39/0.48/0.57/0.96); the rest of the site uses this capstone's own
+          6-DoF F/T implementation (B1–B5, M1–M5). Attention heatmaps are real
+          extracted weights where available (FoAR Force Transformer, B4
+          cross-attention) and clearly-labelled pedagogical synthetics
+          otherwise.
         </p>
 
         <h2 className="section-title text-lg mt-8">Hardware</h2>

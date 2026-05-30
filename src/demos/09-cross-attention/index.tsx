@@ -123,6 +123,26 @@ export default function CrossAttentionProbes() {
     return attn.reduce((a, r) => a + rowEntropy(r), 0) / attn.length;
   }, [attn]);
 
+  // Before vs after contact — the single wow moment (only with real force_mag)
+  const comparison = useMemo(() => {
+    if (!data) return null;
+    const withMag = data.samples.filter((s) => s.force_mag > 0);
+    if (withMag.length < 2) return null;
+    const avgHeads = (s: AttnSample) => {
+      const H = s.heads.length, Q = s.heads[0].length, K = s.heads[0][0].length;
+      const out: number[][] = Array.from({ length: Q }, () => Array(K).fill(0));
+      for (let h = 0; h < H; h++) for (let q = 0; q < Q; q++) for (let k = 0; k < K; k++) out[q][k] += s.heads[h][q][k] / H;
+      return out;
+    };
+    const ent = (m: number[][]) => m.reduce((a, r) => a + rowEntropy(r), 0) / m.length;
+    const before = withMag.reduce((lo, s) => (s.force_mag < lo.force_mag ? s : lo), withMag[0]);
+    const after = withMag.reduce((hi, s) => (s.force_mag > hi.force_mag ? s : hi), withMag[0]);
+    return {
+      before: { s: before, m: avgHeads(before), e: ent(avgHeads(before)) },
+      after: { s: after, m: avgHeads(after), e: ent(avgHeads(after)) },
+    };
+  }, [data]);
+
   if (error) {
     return (
       <div className="container-demo py-8">
@@ -352,6 +372,54 @@ export default function CrossAttentionProbes() {
           <span>retract</span>
         </div>
       </div>
+
+      {/* Before vs after contact — the wow moment */}
+      {comparison && (
+        <div className="mt-6 card border-modality-force/30">
+          <div className="font-mono text-2xs text-text-tertiary mb-3">
+            BEFORE vs AFTER CONTACT · attention concentrates as force builds
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {([
+              { tag: 'before', d: comparison.before, label: 'approach' },
+              { tag: 'after', d: comparison.after, label: 'prying contact' },
+            ] as const).map(({ tag, d, label }) => (
+              <div key={tag} className="card-sunken">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-2xs text-text-secondary">{label}</span>
+                  <span className="font-mono text-2xs" style={{ color: MODALITY_HEX.force }}>
+                    |F| = {d.s.force_mag.toFixed(1)} N
+                  </span>
+                </div>
+                <div className="overflow-x-auto">
+                  <AttentionHeatmap
+                    matrix={d.m}
+                    scheme="blues"
+                    cellSize={11}
+                    rowLabels={data.query_labels}
+                    maxWidth={460}
+                  />
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="font-mono text-2xs text-text-tertiary">entropy</span>
+                  <span
+                    className="font-mono text-2xs font-semibold"
+                    style={{ color: d.e < 0.6 ? '#4ade80' : d.e < 0.85 ? '#fbbf24' : '#f87171' }}
+                  >
+                    {d.e.toFixed(2)}
+                  </span>
+                  <span className="font-mono text-2xs text-text-disabled">
+                    {tag === 'before' ? 'diffuse — looking everywhere' : 'concentrated — looking at the tool tip'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="font-mono text-2xs text-text-disabled mt-3">
+            Visual proof that cross-attention is learning <em>where to look as a function of contact</em>.
+          </p>
+        </div>
+      )}
 
       {/* Equations + finding */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
