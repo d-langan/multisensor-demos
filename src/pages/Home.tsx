@@ -1,5 +1,10 @@
 import { Link } from 'react-router-dom';
-import { DEMOS } from '../lib/demoRegistry';
+import {
+  DEMOS,
+  SECTION_ORDER,
+  SECTION_BLURB,
+  type DemoEntry,
+} from '../lib/demoRegistry';
 import { MODALITY_HEX } from '../lib/viz/colors';
 import { RegistrationMark } from '../components/RegistrationMark';
 
@@ -14,6 +19,38 @@ const PRIORITY_BG: Record<string, string> = {
   P1: 'rgba(251, 146, 60, 0.15)',
   P2: 'rgba(108, 112, 121, 0.15)',
 };
+
+function DemoCard({ demo }: { demo: DemoEntry }) {
+  return (
+    <Link
+      to={demo.route}
+      className="card group relative overflow-hidden no-underline hover:border-border-strong transition-colors"
+    >
+      <div
+        className="absolute top-0 left-0 w-1 h-full"
+        style={{ backgroundColor: MODALITY_HEX[demo.accentModality] }}
+      />
+      <div className="pl-4">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="font-mono text-2xs text-text-disabled">{demo.number}</span>
+          <span
+            className={`font-mono text-2xs px-1.5 py-0.5 rounded ${PRIORITY_STYLE[demo.priority]}`}
+            style={{ backgroundColor: PRIORITY_BG[demo.priority] }}
+          >
+            {demo.priority}
+          </span>
+          <span className="font-mono text-2xs text-text-disabled ml-auto">
+            {demo.talkMinutes}
+          </span>
+        </div>
+        <h3 className="text-lg font-semibold text-text-primary group-hover:text-accent transition-colors mb-1">
+          {demo.title}
+        </h3>
+        <p className="text-sm text-text-secondary leading-relaxed">{demo.question}</p>
+      </div>
+    </Link>
+  );
+}
 
 export default function Home() {
   return (
@@ -30,46 +67,30 @@ export default function Home() {
       </div>
       <p className="text-text-secondary text-lg mb-12 max-w-2xl">
         How do force, vision, and proprioception get encoded and fused in modern
-        imitation learning policies? Seven interactive demos walk through the
-        architecture ladder from raw signals to deployment behavior.
+        imitation learning policies? Thirteen interactive demos walk from raw signals
+        through Kang's four-variant ladder to FoAR, Octo, and DECO.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {DEMOS.map((demo) => (
-          <Link
-            key={demo.id}
-            to={demo.route}
-            className="card group relative overflow-hidden no-underline hover:border-border-strong transition-colors"
-          >
-            <div
-              className="absolute top-0 left-0 w-1 h-full"
-              style={{ backgroundColor: MODALITY_HEX[demo.accentModality] }}
-            />
-            <div className="pl-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-mono text-2xs text-text-disabled">
-                  {demo.number}
-                </span>
-                <span
-                  className={`font-mono text-2xs px-1.5 py-0.5 rounded ${PRIORITY_STYLE[demo.priority]}`}
-                  style={{ backgroundColor: PRIORITY_BG[demo.priority] }}
-                >
-                  {demo.priority}
-                </span>
-                <span className="font-mono text-2xs text-text-disabled ml-auto">
-                  {demo.talkMinutes}
-                </span>
-              </div>
-              <h3 className="text-lg font-semibold text-text-primary group-hover:text-accent transition-colors mb-1">
-                {demo.title}
-              </h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                {demo.question}
-              </p>
+      {SECTION_ORDER.map((section) => {
+        const demos = DEMOS.filter((d) => d.section === section);
+        if (demos.length === 0) return null;
+        return (
+          <div key={section} className="mb-10">
+            <div className="flex items-baseline gap-3 mb-1">
+              <h2 className="section-title">{section}</h2>
+              <span className="font-mono text-2xs text-text-disabled">
+                {demos.length} demo{demos.length > 1 ? 's' : ''}
+              </span>
             </div>
-          </Link>
-        ))}
-      </div>
+            <p className="text-text-tertiary text-sm mb-4">{SECTION_BLURB[section]}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {demos.map((demo) => (
+                <DemoCard key={demo.id} demo={demo} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
 
       <div className="mt-16 card-sunken">
         <h2 className="section-title mb-4">The Comparison Ladder</h2>

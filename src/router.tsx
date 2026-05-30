@@ -11,6 +11,12 @@ const ArchitectureDiff = lazy(() => import('./demos/04-architecture-diff'));
 const DiffusionDenoising = lazy(() => import('./demos/05-diffusion-denoising'));
 const ContactGate = lazy(() => import('./demos/06-contact-gate-live'));
 const FailureModes = lazy(() => import('./demos/07-failure-modes'));
+const ForceLadder = lazy(() => import('./demos/08-force-ladder'));
+const CrossAttention = lazy(() => import('./demos/09-cross-attention'));
+const OctoTokenizer = lazy(() => import('./demos/10-octo-tokenizer'));
+const MMDiTQuadrants = lazy(() => import('./demos/11-mmdit-quadrants'));
+const TemporalForce = lazy(() => import('./demos/12-temporal-force'));
+const Landscape = lazy(() => import('./demos/13-landscape'));
 
 function SuspenseWrapper() {
   return (
@@ -43,6 +49,12 @@ export const router = createHashRouter([
           { path: 'diffusion-denoising', element: <DiffusionDenoising /> },
           { path: 'contact-gate', element: <ContactGate /> },
           { path: 'failure-modes', element: <FailureModes /> },
+          { path: 'force-ladder', element: <ForceLadder /> },
+          { path: 'cross-attention', element: <CrossAttention /> },
+          { path: 'octo-tokenizer', element: <OctoTokenizer /> },
+          { path: 'mmdit-quadrants', element: <MMDiTQuadrants /> },
+          { path: 'temporal-force', element: <TemporalForce /> },
+          { path: 'landscape', element: <Landscape /> },
           { path: 'about', element: <About /> },
         ],
       },
